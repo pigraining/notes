@@ -30,7 +30,7 @@ type Person struct {
 	Age  int
 }
 
-func (p Person) Print() {
+func (p Person) Print(name string, age int) {
 	fmt.Printf("person name = %s,age = %d", p.Name, p.Age)
 }
 
@@ -39,8 +39,8 @@ type Student struct {
 	Person Person
 }
 
-func (s Student) Print() {
-	fmt.Printf("student id = %s,student name = %s,student age = %d", s.Id, s.Person.Name, s.Person.Age)
+func (s Student) Print(stu Student) {
+	fmt.Printf("student id = %s,student name = %s,student age = %d", stu.Id, stu.Person.Name, stu.Person.Age)
 }
 
 //解析传过来的结构体
@@ -96,12 +96,12 @@ func test5() {
 //通过反射修改struct中的字段
 func test6(input interface{}) {
 	v := reflect.ValueOf(input)
-	if v.Kind() == reflect.Ptr && !v.CanSet() {
+	if v.Kind() == reflect.Ptr && !v.Elem().CanSet() {
 		fmt.Println("input 为指针类型，且不能修改")
 		return
-	} /*else {
+	} else {
 		v = v.Elem()
-	}*/
+	}
 
 	feild := v.FieldByName("Name")
 	if !feild.IsValid() {
@@ -111,25 +111,63 @@ func test6(input interface{}) {
 	if feild.Kind() == reflect.String {
 		feild.SetString("zhu yu ning")
 	}
-	fmt.Println(feild)
+	fmt.Println(input)
+}
+
+//通过反射动态调用struct方法
+func test7(input interface{}) {
+	m := Student{
+		Id:     "111",
+		Person: Person{"zzzzzz", 18},
+	}
+
+	v := reflect.ValueOf(input)
+	mv := v.MethodByName("Print")
+	args := []reflect.Value{reflect.ValueOf(m)}
+	mv.Call(args)
 }
 
 func main() {
-	//	str := "this is a string"
-	//  test1(str1)
-	//  test2(str2)
-	/*	stu := Student{
-			Id:     "002",
-			Person: Person{Name: "wei", Age: 21},
-		}
-		test3(stu)*/
+	str := "this is a string"
+	fmt.Println("this is test1")
+	test1(str)
+	fmt.Println("----------------------------------------------")
 
+	fmt.Println("this is test2")
+	test2(str)
+	fmt.Println("----------------------------------------------")
+
+	fmt.Println("this is test3")
+	stu := Student{
+		Id:     "002",
+		Person: Person{Name: "wei", Age: 21},
+	}
+	test3(stu)
+	fmt.Println("----------------------------------------------")
+
+	fmt.Println("this is test4")
 	doc := Docker{
 		Person:     Person{Name: "wei", Age: 21},
 		Department: "005部门",
 	}
 	test4(doc)
+	fmt.Println("----------------------------------------------")
+
+	fmt.Println("this is test5")
 	test5()
+	fmt.Println("----------------------------------------------")
+
 	fmt.Println("这是测试6")
-	test6(doc)
+	doc1 := &Docker{
+		Person:     Person{Name: "wei", Age: 21},
+		Department: "005部门",
+	}
+	test6(doc1)
+	fmt.Println("----------------------------------------------")
+
+	fmt.Println("this is test7")
+	stu1 := &Student{}
+	test7(stu1)
+	fmt.Println()
+	fmt.Println("----------------------------------------------")
 }

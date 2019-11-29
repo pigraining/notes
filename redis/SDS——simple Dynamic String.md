@@ -2,7 +2,15 @@
 
 #### 1.结构
 
-![image-20191128163116871](C:\Users\weiyaqi\AppData\Roaming\Typora\typora-user-images\image-20191128163116871.png)
+```go
+type Sds struct {
+	len  int
+	free int
+	buf  []byte
+}
+```
+
+![](C:\Users\weiyaqi\Desktop\github\notes\redis\图片\0880c08b011095becf0f.jpeg)
 
 len：表示字符串的长度为5
 
